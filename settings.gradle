@@ -6,4 +6,5 @@ include 'udp-client'
 include 'websocket-client'
 include 'server-demo'
 include 'tcp-client-demo'
+include 'udp-client-demo'
 

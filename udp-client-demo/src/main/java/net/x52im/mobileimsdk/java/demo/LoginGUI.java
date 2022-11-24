@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2022  即时通讯网(52im.net) & Jack Jiang.
- * The MobileIMSDK_TCP (MobileIMSDK v6.x TCP版) Project. 
+ * The MobileIMSDK_UDP (MobileIMSDK v6.x UDP版) Project. 
  * All rights reserved.
  * 
  * > Github地址：https://github.com/JackJiang2011/MobileIMSDK
@@ -12,7 +12,7 @@
  *  
  * "即时通讯网(52im.net) - 即时通讯开发者社区!" 推荐开源工程。
  * 
- * LoginGUI.java at 2022-7-16 16:53:48, code by Jack Jiang.
+ * LoginGUI.java at 2022-7-16 17:02:11, code by Jack Jiang.
  */
 package net.x52im.mobileimsdk.java.demo;
 
@@ -21,6 +21,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -47,6 +48,7 @@ import net.x52im.mobileimsdk.java.core.LocalSocketProvider;
 import net.x52im.mobileimsdk.server.protocol.c.PLoginInfo;
 
 import org.jb2011.lnf.beautyeye.ch3_button.BEButtonUI;
+import org.jb2011.swing9patch.toast.Toast;
 
 import com.eva.epc.common.util.CommonUtils;
 import com.eva.epc.widget.HardLayoutPane;
@@ -85,8 +87,8 @@ public class LoginGUI extends JFrame
 		editServerPort = new JTextField(5);
 		editServerIp.setForeground(new Color(13,148,252));
 		editServerPort.setForeground(new Color(13,148,252));
-		editServerIp.setText("127.0.0.1");// default value
-		editServerPort.setText("8901");	// default value
+		editServerIp.setText("127.0.0.1");	// default value
+		editServerPort.setText("7901");	// default value
 		btnLogin = new JButton("  登 陆  ");
 		btnLogin.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.blue));
 		btnLogin.setForeground(Color.white);
@@ -133,9 +135,9 @@ public class LoginGUI extends JFrame
 		bottomPanel.setBackground(Color.white);
 		bottomPanel.setBorder(BorderFactory.createCompoundBorder(
 				bottomPabelTopBorder, BorderFactory.createEmptyBorder(5, 0, 5, 0)));
-//		bottomPanel.add(
-//			new JLabel(new ImageIcon(LoginGUI.class.getResource("res/copyright_img.png")))
-//			, BorderLayout.CENTER);
+		/*bottomPanel.add(
+			new JLabel(new ImageIcon(LoginGUI.class.getResource("res/copyright_img.png")))
+			, BorderLayout.CENTER);*/
 		
 		// 总体界面布局
 		mainPanel.setBorder(BorderFactory.createEmptyBorder(4, 5, 4, 5));
@@ -144,7 +146,7 @@ public class LoginGUI extends JFrame
 		this.getContentPane().add(bottomPanel, BorderLayout.SOUTH);
 		
 		// 窗体设置
-		this.setTitle("MobileIMSDK_TCP v6 - Demo登陆");
+		this.setTitle("MobileIMSDK_UDP v6 - Demo登陆");
 		this.setResizable(false);
 		this.pack();
 	}
@@ -185,7 +187,7 @@ public class LoginGUI extends JFrame
 					//## BUG FIX START: 20170718 by Jack Jiang 
 					//## 让以下代码异步运行于EDT线程，从而解决登陆界面切到主界面时偶尔卡死问题
 					// startup GUI
-					TcpClientLaunch.runOnUiThread(new Runnable()
+					UdpClientLaunch.runOnUiThread(new Runnable()
 					{
 						public void run()
 						{
@@ -203,8 +205,7 @@ public class LoginGUI extends JFrame
 				}
 				// 登陆失败
 				else
-					JOptionPane.showMessageDialog(LoginGUI.this, "Sorry，登陆失败，错误码="+code
-							, "友情提示",JOptionPane.ERROR_MESSAGE);  
+					JOptionPane.showMessageDialog(LoginGUI.this, "Sorry，登陆失败，错误码="+code, "友情提示",JOptionPane.ERROR_MESSAGE);  
 			}
 		};
 	}
@@ -217,8 +218,7 @@ public class LoginGUI extends JFrame
 		//** 设置服务器地址和端口号
 		String serverIP = editServerIp.getText();
 		String serverPort = editServerPort.getText();
-		if(!CommonUtils.isStringEmpty(serverIP, true)
-			&& !CommonUtils.isStringEmpty(serverPort, true))
+		if(!CommonUtils.isStringEmpty(serverIP, true)&& !CommonUtils.isStringEmpty(serverPort, true))
 		{
 			// 无条件重置socket，防止首次登陆时用了错误的ip或域名，下次登陆时sendData中仍然使用老的ip
 			// 说明：本行代码建议仅用于Demo时，生产环境下是没有意义的，因为你的APP里不可能连IP都搞错了
@@ -262,8 +262,7 @@ public class LoginGUI extends JFrame
 		// * 立即显示登陆处理进度提示（并将同时启动超时检查线程）
 		onLoginProgress.showProgressing(true);
 		// * 设置好服务端反馈的登陆结果观察者（当客户端收到服务端反馈过来的登陆消息时将被通知）
-		IMClientManager.getInstance().getBaseEventListener()
-			.setLoginOkForLaunchObserver(onLoginSucessObserver);
+		IMClientManager.getInstance().getBaseEventListener().setLoginOkForLaunchObserver(onLoginSucessObserver);
 
 		PLoginInfo loginInfo = new PLoginInfo(editLoginName.getText(), editLoginPsw.getText());
 		// * 异步提交登陆名和密码
@@ -291,8 +290,7 @@ public class LoginGUI extends JFrame
 	
 	public void showToast(String text)
 	{
-//		Toast.showTost(3000, text, new Point((int)(this.getLocationOnScreen().getX()),
-//				(int)(this.getLocationOnScreen().getY())));
+//		Toast.showTost(3000, text, new Point((int)(this.getLocationOnScreen().getX()),(int)(this.getLocationOnScreen().getY())));
 	}
 	
 	//-------------------------------------------------------------------------- inner classes

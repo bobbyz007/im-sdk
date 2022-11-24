@@ -1,5 +1,5 @@
 plugins {
-    id 'java-library'
+    id 'java'
 }
 
 group 'net.im.sdk'
@@ -11,9 +11,12 @@ dependencies {
     implementation group: 'commons-io', name: 'commons-io', version: '2.10.0'
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
     implementation group: 'io.netty', name: 'netty-all', version: '4.1.85.Final'
-
     implementation 'com.google.code.gson:gson:2.10'
 
-    api project(":protocol")
+    implementation fileTree(dir: 'lib', includes: ['*.jar'])
+    implementation project(":udp-client")
 }
 
+test {
+    useJUnitPlatform()
+}

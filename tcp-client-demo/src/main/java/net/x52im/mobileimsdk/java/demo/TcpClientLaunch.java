@@ -31,7 +31,7 @@ import com.eva.epc.common.util.OS;
  * 
  * @author Jack Jiang
  */
-public class Launch
+public class TcpClientLaunch
 {
 	private static void initUserInterface()
 	{

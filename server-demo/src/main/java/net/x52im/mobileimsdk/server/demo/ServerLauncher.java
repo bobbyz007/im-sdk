@@ -18,7 +18,6 @@ package net.x52im.mobileimsdk.server.demo;
 
 import java.io.IOException;
 
-import net.x52im.mobileimsdk.server.ServerLauncher;
 import net.x52im.mobileimsdk.server.network.Gateway;
 import net.x52im.mobileimsdk.server.network.GatewayTCP;
 import net.x52im.mobileimsdk.server.network.GatewayUDP;
@@ -39,7 +38,7 @@ import net.x52im.mobileimsdk.server.utils.ServerToolKits.SenseModeWebsocket;
  * @version 1.0
  * @since 3.1
  */
-public class ServerLauncherImpl extends ServerLauncher
+public class ServerLauncher extends net.x52im.mobileimsdk.server.ServerLauncher
 {
 	/**
 	 * 静态类方法：进行一些全局配置设置。
@@ -60,7 +59,7 @@ public class ServerLauncherImpl extends ServerLauncher
 		// 设置MobileIMSDK服务端仅支持WebSocket协议
 //		ServerLauncher.supportedGateways = Gateway.SOCKET_TYPE_WEBSOCKET;
 		// 设置MobileIMSDK服务端同时支持UDP、TCP、WebSocket三种协议
-		ServerLauncher.supportedGateways = Gateway.SOCKET_TYPE_UDP | Gateway.SOCKET_TYPE_TCP | Gateway.SOCKET_TYPE_WEBSOCKET;
+		net.x52im.mobileimsdk.server.ServerLauncher.supportedGateways = Gateway.SOCKET_TYPE_UDP | Gateway.SOCKET_TYPE_TCP | Gateway.SOCKET_TYPE_WEBSOCKET;
 		
 		// 开/关Demog日志的输出
 		QoS4SendDaemonS2C.getInstance().setDebugable(true);
@@ -73,7 +72,7 @@ public class ServerLauncherImpl extends ServerLauncher
 //		ServerToolKits.setSenseModeWebsocket(SenseModeWebsocket.MODE_30S);
 
 		// 关闭与Web端的消息互通桥接器（其实SDK中默认就是false）
-		ServerLauncher.bridgeEnabled = false;
+		net.x52im.mobileimsdk.server.ServerLauncher.bridgeEnabled = false;
 		// TODO 跨服桥接器MQ的URI（本参数只在ServerLauncher.bridgeEnabled为true时有意义）
 //		BridgeProcessor.IMMQ_URI = "amqp://js:19844713@192.168.0.190";
 		
@@ -86,7 +85,7 @@ public class ServerLauncherImpl extends ServerLauncher
 	 * 
 	 * @throws IOException
 	 */
-	public ServerLauncherImpl() throws IOException
+	public ServerLauncher() throws IOException
 	{
 		super();
 	}
@@ -105,7 +104,7 @@ public class ServerLauncherImpl extends ServerLauncher
     public static void main(String[] args) throws Exception 
     {
     	// 实例化后记得startup哦，单独startup()的目的是让调用者可以延迟决定何时真正启动IM服务
-    	final ServerLauncherImpl sli = new ServerLauncherImpl();
+    	final ServerLauncher sli = new ServerLauncher();
     	
     	// 启动MobileIMSDK服务端的Demo
     	sli.startup();

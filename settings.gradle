@@ -1,0 +1,9 @@
+rootProject.name = 'im-sdk'
+include 'protocol'
+include 'server'
+include 'tcp-client'
+include 'udp-client'
+include 'websocket-client'
+include 'server-demo'
+include 'tcp-client-demo'
+

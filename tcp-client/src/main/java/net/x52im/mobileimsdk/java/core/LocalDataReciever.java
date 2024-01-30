@@ -33,12 +33,16 @@ public class LocalDataReciever
 {
 	private final static String TAG = LocalDataReciever.class.getSimpleName();
 	
-	private static LocalDataReciever instance = null;
+	private static volatile LocalDataReciever instance = null;
 	
 	public static LocalDataReciever getInstance()
 	{
-		if(instance == null){
-			instance = new LocalDataReciever();
+		if (instance == null) {
+			synchronized (LocalDataReciever.class) {
+				if (instance == null) {
+					instance = new LocalDataReciever();
+				}
+			}
 		}
 		return instance;
 	}

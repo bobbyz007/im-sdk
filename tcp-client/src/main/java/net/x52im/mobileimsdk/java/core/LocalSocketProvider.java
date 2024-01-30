@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2022  即时通讯网(52im.net) & Jack Jiang.
- * The MobileIMSDK_TCP (MobileIMSDK v6.1 TCP版) Project. 
+ * Copyright (C) 2023  即时通讯网(52im.net) & Jack Jiang.
+ * The MobileIMSDK_TCP (MobileIMSDK v6.4 TCP版) Project. 
  * All rights reserved.
  * 
  * > Github地址：https://github.com/JackJiang2011/MobileIMSDK
@@ -12,7 +12,7 @@
  *  
  * "即时通讯网(52im.net) - 即时通讯开发者社区!" 推荐开源工程。
  * 
- * LocalSocketProvider.java at 2022-7-16 17:22:43, code by Jack Jiang.
+ * LocalSocketProvider.java at 2023-9-21 15:32:54, code by Jack Jiang.
  */
 package net.x52im.mobileimsdk.java.core;
 
@@ -31,6 +31,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
+import io.netty.handler.ssl.SslContext;
 import io.netty.util.CharsetUtil;
 import net.x52im.mobileimsdk.java.ClientCoreSDK;
 import net.x52im.mobileimsdk.java.conf.ConfigEntity;
@@ -43,7 +44,8 @@ public class LocalSocketProvider {
 	
 	public static int TCP_FRAME_FIXED_HEADER_LENGTH = 4; // 4 bytes
 	public static int TCP_FRAME_MAX_BODY_LENGTH = 6 * 1024; // 6K bytes
-	private static LocalSocketProvider instance = null;
+	public static SslContext sslContext = null;
+	private static volatile LocalSocketProvider instance = null;
 
 	private Bootstrap bootstrap = null;
 	private Channel localSocket = null;
@@ -51,8 +53,13 @@ public class LocalSocketProvider {
 	private MBObserver connectionDoneObserver;
 
 	public static LocalSocketProvider getInstance() {
-		if (instance == null)
-			instance = new LocalSocketProvider();
+		if (instance == null) {
+			synchronized (LocalSocketProvider.class) {
+				if (instance == null) {
+					instance = new LocalSocketProvider();
+				}
+			}
+		}
 		return instance;
 	}
 
@@ -201,6 +208,9 @@ public class LocalSocketProvider {
 		@Override
 		protected void initChannel(Channel ch) throws Exception {
 			ChannelPipeline pipeline = ch.pipeline();
+			if(sslContext != null) {
+				pipeline.addFirst("ssl", sslContext.newHandler(ch.alloc()));
+			}
 			pipeline.addLast("frameDecoder", new LengthFieldBasedFrameDecoder(TCP_FRAME_FIXED_HEADER_LENGTH + TCP_FRAME_MAX_BODY_LENGTH,0, TCP_FRAME_FIXED_HEADER_LENGTH, 0, TCP_FRAME_FIXED_HEADER_LENGTH));
 			pipeline.addLast("frameEncoder", new LengthFieldPrepender(TCP_FRAME_FIXED_HEADER_LENGTH));
 			pipeline.addLast(TcpClientHandler.class.getSimpleName(), new TcpClientHandler());

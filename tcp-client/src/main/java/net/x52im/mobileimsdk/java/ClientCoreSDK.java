@@ -32,7 +32,7 @@ public class ClientCoreSDK {
 
 	public static boolean DEBUG = true;
 	public static boolean autoReLogin = true;
-	private static ClientCoreSDK instance = null;
+	private static volatile ClientCoreSDK instance = null;
 
 	private boolean _init = false;
 	private boolean connectedToServer = true;
@@ -44,8 +44,13 @@ public class ClientCoreSDK {
 	private MessageQoSEvent messageQoSEvent = null;
 
 	public static ClientCoreSDK getInstance() {
-		if (instance == null)
-			instance = new ClientCoreSDK();
+		if (instance == null) {
+			synchronized (ClientCoreSDK.class) {
+				if (instance == null) {
+					instance = new ClientCoreSDK();
+				}
+			}
+		}
 		return instance;
 	}
 

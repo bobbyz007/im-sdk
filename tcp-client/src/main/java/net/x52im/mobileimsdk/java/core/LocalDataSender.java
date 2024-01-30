@@ -27,16 +27,19 @@ import net.x52im.mobileimsdk.java.utils.Log;
 import net.x52im.mobileimsdk.java.utils.MBObserver;
 import net.x52im.mobileimsdk.java.utils.TCPUtils;
 
-import javax.swing.*;
-
 public class LocalDataSender {
 	private final static String TAG = LocalDataSender.class.getSimpleName();
 
-	private static LocalDataSender instance = null;
+	private static volatile LocalDataSender instance = null;
 
 	public static LocalDataSender getInstance() {
-		if (instance == null)
-			instance = new LocalDataSender();
+		if (instance == null) {
+			synchronized (LocalDataSender.class) {
+				if (instance == null) {
+					instance = new LocalDataSender();
+				}
+			}
+		}
 		return instance;
 	}
 

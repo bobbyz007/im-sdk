@@ -31,7 +31,7 @@ public class QoS4SendDaemon
 {
 	private final static String TAG = QoS4SendDaemon.class.getSimpleName();
 	
-	private static QoS4SendDaemon instance = null;
+	private static volatile QoS4SendDaemon instance = null;
 	public final static int CHECH_INTERVAL = 5000;
 	public final static int MESSAGES_JUST$NOW_TIME = 3 * 1000;
 	public final static int QOS_TRY_COUNT = 2;// since 3.0 (20160918): 为了降低服务端负载，本参数由原3调整为2
@@ -43,9 +43,13 @@ public class QoS4SendDaemon
 	private Timer timer = null;
 	
 	public static QoS4SendDaemon getInstance(){
-		if(instance == null)
-			instance = new QoS4SendDaemon();
-		
+		if (instance == null) {
+			synchronized (QoS4SendDaemon.class) {
+				if (instance == null) {
+					instance = new QoS4SendDaemon();
+				}
+			}
+		}
 		return instance;
 	}
 	

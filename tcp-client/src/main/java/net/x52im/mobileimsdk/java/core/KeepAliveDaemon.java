@@ -30,7 +30,7 @@ public class KeepAliveDaemon {
 	
 	private final static String TAG = KeepAliveDaemon.class.getSimpleName();
 	
-	private static KeepAliveDaemon instance = null;
+	private static volatile KeepAliveDaemon instance = null;
 	
 	public static int KEEP_ALIVE_INTERVAL = 15000;
 	public static int NETWORK_CONNECTION_TIME_OUT = KEEP_ALIVE_INTERVAL + 5000;
@@ -47,8 +47,13 @@ public class KeepAliveDaemon {
 	private Timer keepAliveTimeoutTimer = null;
 
 	public static KeepAliveDaemon getInstance() {
-		if (instance == null)
-			instance = new KeepAliveDaemon();
+		if (instance == null) {
+			synchronized (KeepAliveDaemon.class) {
+				if (instance == null) {
+					instance = new KeepAliveDaemon();
+				}
+			}
+		}
 		return instance;
 	}
 

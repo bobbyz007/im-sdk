@@ -30,7 +30,7 @@ public class QoS4ReciveDaemon {
 	
 	private final static String TAG = QoS4ReciveDaemon.class.getSimpleName();
 	
-	private static QoS4ReciveDaemon instance = null;
+	private static volatile QoS4ReciveDaemon instance = null;
 	public final static int CHECH_INTERVAL = 5 * 60 * 1000; // 5分钟
 	public final static int MESSAGES_VALID_TIME = 10 * 60 * 1000;// 10分钟
 
@@ -40,9 +40,13 @@ public class QoS4ReciveDaemon {
 	private Timer timer = null;
 
 	public static QoS4ReciveDaemon getInstance() {
-		if (instance == null)
-			instance = new QoS4ReciveDaemon();
-
+		if (instance == null) {
+			synchronized (QoS4ReciveDaemon.class) {
+				if (instance == null) {
+					instance = new QoS4ReciveDaemon();
+				}
+			}
+		}
 		return instance;
 	}
 

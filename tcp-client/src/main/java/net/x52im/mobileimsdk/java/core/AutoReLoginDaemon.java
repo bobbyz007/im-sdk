@@ -27,7 +27,7 @@ import net.x52im.mobileimsdk.java.utils.Log;
 public class AutoReLoginDaemon {
 	
 	private final static String TAG = AutoReLoginDaemon.class.getSimpleName();
-	private static AutoReLoginDaemon instance = null;
+	private static volatile AutoReLoginDaemon instance = null;
 	public static int AUTO_RE$LOGIN_INTERVAL = 3000;// 2000;
 
 	private boolean autoReLoginRunning = false;
@@ -35,8 +35,13 @@ public class AutoReLoginDaemon {
 	private Timer timer = null;
 
 	public static AutoReLoginDaemon getInstance() {
-		if (instance == null)
-			instance = new AutoReLoginDaemon();
+		if (instance == null) {
+			synchronized (AutoReLoginDaemon.class) {
+				if (instance == null) {
+					instance = new AutoReLoginDaemon();
+				}
+			}
+		}
 		return instance;
 	}
 

@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2022  即时通讯网(52im.net) & Jack Jiang.
- * The MobileIMSDK_TCP (MobileIMSDK v6.x TCP版) Project. 
+ * Copyright (C) 2023  即时通讯网(52im.net) & Jack Jiang.
+ * The MobileIMSDK_TCP (MobileIMSDK v6.4 TCP版) Project. 
  * All rights reserved.
  * 
  * > Github地址：https://github.com/JackJiang2011/MobileIMSDK
@@ -12,7 +12,7 @@
  *  
  * "即时通讯网(52im.net) - 即时通讯开发者社区!" 推荐开源工程。
  * 
- * LoginGUI.java at 2022-7-16 16:53:48, code by Jack Jiang.
+ * LoginGUI.java at 2023-9-22 11:55:07, code by Jack Jiang.
  */
 package net.x52im.mobileimsdk.java.demo;
 
@@ -21,6 +21,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -31,6 +32,7 @@ import java.util.Observer;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -47,6 +49,7 @@ import net.x52im.mobileimsdk.java.core.LocalSocketProvider;
 import net.x52im.mobileimsdk.server.protocol.c.PLoginInfo;
 
 import org.jb2011.lnf.beautyeye.ch3_button.BEButtonUI;
+import org.jb2011.swing9patch.toast.Toast;
 
 import com.eva.epc.common.util.CommonUtils;
 import com.eva.epc.widget.HardLayoutPane;
@@ -112,7 +115,7 @@ public class LoginGUI extends JFrame
 		mainPanel.addTitledLineSeparator("");
 		JPanel btnAndVerPanel = new JPanel();
 		btnAndVerPanel.setLayout(new BoxLayout(btnAndVerPanel, BoxLayout.LINE_AXIS));
-		JLabel lbVer= new JLabel("v6.2b220716.1");
+		JLabel lbVer= new JLabel("v6.4b230922.1");
 		lbVer.setForeground(new Color(184,184,184));
 		btnAndVerPanel.add(lbVer);
 		btnAndVerPanel.add(Box.createHorizontalGlue());
@@ -133,9 +136,9 @@ public class LoginGUI extends JFrame
 		bottomPanel.setBackground(Color.white);
 		bottomPanel.setBorder(BorderFactory.createCompoundBorder(
 				bottomPabelTopBorder, BorderFactory.createEmptyBorder(5, 0, 5, 0)));
-//		bottomPanel.add(
-//			new JLabel(new ImageIcon(LoginGUI.class.getResource("res/copyright_img.png")))
-//			, BorderLayout.CENTER);
+		bottomPanel.add(
+			new JLabel(new ImageIcon(LoginGUI.class.getResource("res/copyright_img.png")))
+			, BorderLayout.CENTER);
 		
 		// 总体界面布局
 		mainPanel.setBorder(BorderFactory.createEmptyBorder(4, 5, 4, 5));
@@ -185,7 +188,7 @@ public class LoginGUI extends JFrame
 					//## BUG FIX START: 20170718 by Jack Jiang 
 					//## 让以下代码异步运行于EDT线程，从而解决登陆界面切到主界面时偶尔卡死问题
 					// startup GUI
-					TcpClientLaunch.runOnUiThread(new Runnable()
+					Launch.runOnUiThread(new Runnable()
 					{
 						public void run()
 						{
@@ -291,8 +294,8 @@ public class LoginGUI extends JFrame
 	
 	public void showToast(String text)
 	{
-//		Toast.showTost(3000, text, new Point((int)(this.getLocationOnScreen().getX()),
-//				(int)(this.getLocationOnScreen().getY())));
+		Toast.showTost(3000, text, new Point((int)(this.getLocationOnScreen().getX()),
+				(int)(this.getLocationOnScreen().getY())));
 	}
 	
 	//-------------------------------------------------------------------------- inner classes

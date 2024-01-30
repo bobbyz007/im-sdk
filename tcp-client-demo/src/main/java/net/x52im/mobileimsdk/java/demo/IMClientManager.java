@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2022  即时通讯网(52im.net) & Jack Jiang.
- * The MobileIMSDK_TCP (MobileIMSDK v6.x TCP版) Project. 
+ * Copyright (C) 2023  即时通讯网(52im.net) & Jack Jiang.
+ * The MobileIMSDK_TCP (MobileIMSDK v6.4 TCP版) Project. 
  * All rights reserved.
  * 
  * > Github地址：https://github.com/JackJiang2011/MobileIMSDK
@@ -12,16 +12,21 @@
  *  
  * "即时通讯网(52im.net) - 即时通讯开发者社区!" 推荐开源工程。
  * 
- * IMClientManager.java at 2022-7-16 16:53:48, code by Jack Jiang.
+ * IMClientManager.java at 2023-9-22 11:55:07, code by Jack Jiang.
  */
 package net.x52im.mobileimsdk.java.demo;
 
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import net.x52im.mobileimsdk.java.ClientCoreSDK;
 import net.x52im.mobileimsdk.java.conf.ConfigEntity;
 import net.x52im.mobileimsdk.java.conf.ConfigEntity.SenseMode;
+import net.x52im.mobileimsdk.java.core.LocalSocketProvider;
 import net.x52im.mobileimsdk.java.demo.event.ChatBaseEventImpl;
 import net.x52im.mobileimsdk.java.demo.event.ChatMessageEventImpl;
 import net.x52im.mobileimsdk.java.demo.event.MessageQoSEventImpl;
+import net.x52im.mobileimsdk.java.utils.Log;
 
 /**
  * MobileIMSDK的管理类。
@@ -77,6 +82,9 @@ public class IMClientManager
 	    
 			// 开启/关闭DEBUG信息输出
 	    	ClientCoreSDK.DEBUG = true;
+	    	
+	    	// 开启SSL/TLS加密传输（请确保服务端也已开启SSL）
+//	    	LocalSocketProvider.sslContext = createSslContext();
 	    
 			// 设置事件回调
 			baseEventListener = new ChatBaseEventImpl();
@@ -88,6 +96,24 @@ public class IMClientManager
 			
 			init = true;
 		}
+	}
+	
+	/**
+	 * 创建SslContext对象，用于开启SSL/TLS加密传输。
+	 * 
+	 * @return 如果成功创建则返回SslContext对象，否则返回null
+	 */
+	public SslContext createSslContext() 
+	{
+		SslContext sslContext = null;
+		try {
+			sslContext = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
+			Log.d(TAG, "【IMCORE-TCP】已开启SSL/TLS加密(单向认证)，且sslContext创建成功。");
+		} catch (Exception e) {
+			Log.w(TAG, "【IMCORE-TCP】创建sslContext时出错，原因是：" + e.getMessage(), e);
+		}
+		
+		return sslContext;
 	}
 
 	/**

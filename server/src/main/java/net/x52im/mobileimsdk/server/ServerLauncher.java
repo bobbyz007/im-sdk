@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2022  即时通讯网(52im.net) & Jack Jiang.
- * The MobileIMSDK v6.1 Project. 
+ * Copyright (C) 2023  即时通讯网(52im.net) & Jack Jiang.
+ * The MobileIMSDK v6.4 Project. 
  * All rights reserved.
  * 
  * > Github地址：https://github.com/JackJiang2011/MobileIMSDK
@@ -12,7 +12,7 @@
  *  
  * "即时通讯网(52im.net) - 即时通讯开发者社区!" 推荐开源工程。
  * 
- * ServerLauncher.java at 2022-7-12 16:35:58, code by Jack Jiang.
+ * ServerLauncher.java at 2023-9-21 15:24:55, code by Jack Jiang.
  */
 package net.x52im.mobileimsdk.server;
 
@@ -61,21 +61,36 @@ public abstract class ServerLauncher
     {
     	if(Gateway.isSupportUDP(supportedGateways))
     	{
-	    	udp = new GatewayUDP();
+	    	udp = createGatewayUDP();
 	    	udp.init(this.serverCoreHandler);
     	}
     	
     	if(Gateway.isSupportTCP(supportedGateways))
     	{
-	    	tcp = new GatewayTCP();
+	    	tcp = createGatewayTCP();
 	    	tcp.init(this.serverCoreHandler);
     	}
     	
     	if(Gateway.isSupportWebSocket(supportedGateways))
     	{
-    		ws = new GatewayWebsocket();
+    		ws = createGatewayWebsocket();
     		ws.init(this.serverCoreHandler);
     	}
+    }
+    
+    protected GatewayUDP createGatewayUDP()
+    {
+    	return new GatewayUDP();
+    }
+
+    protected GatewayTCP createGatewayTCP()
+    {
+    	return new GatewayTCP();
+    }
+
+    protected GatewayWebsocket createGatewayWebsocket()
+    {
+    	return new GatewayWebsocket();
     }
     
     public void startup() throws Exception
@@ -89,10 +104,7 @@ public abstract class ServerLauncher
     		QoS4SendDaemonS2C.getInstance().startup(true).setServerLauncher(this);
 
     		if(ServerLauncher.bridgeEnabled){
-//    			QoS4ReciveDaemonC2B.getInstance().startup();
-//    			QoS4SendDaemonB2C.getInstance().startup(true).setServerLauncher(this);
     			serverCoreHandler.lazyStartupBridgeProcessor();
-
     			logger.info("[IMCORE] 配置项：已开启与MobileIMSDK Web的互通.");
     		}
     		else{
@@ -160,4 +172,9 @@ public abstract class ServerLauncher
 	{
 		return running;
 	}
+	
+//	public static void main(String[] args) throws IOException 
+//    {
+//        new ServerLauncher().startup();
+//    }
 }

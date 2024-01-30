@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2022  即时通讯网(52im.net) & Jack Jiang.
- * The MobileIMSDK v6.1 Project. 
+ * Copyright (C) 2023  即时通讯网(52im.net) & Jack Jiang.
+ * The MobileIMSDK v6.4 Project. 
  * All rights reserved.
  * 
  * > Github地址：https://github.com/JackJiang2011/MobileIMSDK
@@ -12,7 +12,7 @@
  *  
  * "即时通讯网(52im.net) - 即时通讯开发者社区!" 推荐开源工程。
  * 
- * GatewayTCP.java at 2022-7-12 16:35:58, code by Jack Jiang.
+ * GatewayTCP.java at 2023-9-21 15:24:55, code by Jack Jiang.
  */
 package net.x52im.mobileimsdk.server.network;
 
@@ -29,6 +29,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
+import io.netty.handler.ssl.SslContext;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import net.x52im.mobileimsdk.server.ServerCoreHandler;
 import net.x52im.mobileimsdk.server.network.tcp.MBTCPClientInboundHandler;
@@ -44,6 +45,8 @@ public class GatewayTCP extends Gateway
     public static int SESION_RECYCLER_EXPIRE = 20;//10;
     public static int TCP_FRAME_FIXED_HEADER_LENGTH = 4;     // 4 bytes
 	public static int TCP_FRAME_MAX_BODY_LENGTH  = 6 * 1024; // 6K bytes
+	
+	public static SslContext sslContext = null;
 
 	protected final EventLoopGroup __bossGroup4Netty = new NioEventLoopGroup(1);
  	protected final EventLoopGroup __workerGroup4Netty = new NioEventLoopGroup();
@@ -69,7 +72,7 @@ public class GatewayTCP extends Gateway
     {
         ChannelFuture cf = bootstrap.bind(PORT).sync();
         if (cf.isSuccess()) {
-        	logger.info("[IMCORE-tcp] 基于MobileIMSDK的TCP服务绑定端口"+PORT+"成功 √");
+        	logger.info("[IMCORE-tcp] 基于MobileIMSDK的TCP服务绑定端口"+PORT+"成功 √ "+(isSsl()?"(已开启SSL/TLS加密传输)":""));
         }
         else{
         	logger.info("[IMCORE-tcp] 基于MobileIMSDK的TCP服务绑定端口"+PORT+"失败 ×");
@@ -101,7 +104,12 @@ public class GatewayTCP extends Gateway
 			@Override
 			protected void initChannel(Channel channel) throws Exception {
 				
-				ChannelPipeline pipeline = channel.pipeline();    
+				ChannelPipeline pipeline = channel.pipeline(); 
+				
+				if(sslContext != null) {
+					pipeline.addFirst(sslContext.newHandler(channel.alloc()));
+				}
+				
 				pipeline.addLast("frameDecoder", new LengthFieldBasedFrameDecoder(
 							TCP_FRAME_FIXED_HEADER_LENGTH+TCP_FRAME_MAX_BODY_LENGTH
                         	, 0, TCP_FRAME_FIXED_HEADER_LENGTH, 0, TCP_FRAME_FIXED_HEADER_LENGTH));
@@ -111,4 +119,9 @@ public class GatewayTCP extends Gateway
 			}
 		};
 	}
+    
+    public static boolean isSsl() 
+    {
+    	return sslContext != null;
+    }
 }

@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2022  即时通讯网(52im.net) & Jack Jiang.
- * The MobileIMSDK v6.1 Project. 
+ * Copyright (C) 2023  即时通讯网(52im.net) & Jack Jiang.
+ * The MobileIMSDK v6.4 Project. 
  * All rights reserved.
  * 
  * > Github地址：https://github.com/JackJiang2011/MobileIMSDK
@@ -12,7 +12,7 @@
  *  
  * "即时通讯网(52im.net) - 即时通讯开发者社区!" 推荐开源工程。
  * 
- * GatewayWebsocket.java at 2022-7-12 16:35:58, code by Jack Jiang.
+ * GatewayWebsocket.java at 2023-9-21 15:24:55, code by Jack Jiang.
  */
 package net.x52im.mobileimsdk.server.network;
 
@@ -48,6 +48,8 @@ public class GatewayWebsocket extends Gateway
     public static int PORT = 3000;
     public static int SESION_RECYCLER_EXPIRE = 20;
     
+    public static SslContext sslContext = null;
+    
 	protected final EventLoopGroup __bossGroup4Netty = new NioEventLoopGroup(1);
  	protected final EventLoopGroup __workerGroup4Netty = new NioEventLoopGroup();
  	protected Channel __serverChannel4Netty = null;
@@ -72,7 +74,7 @@ public class GatewayWebsocket extends Gateway
         bootstrap = new ServerBootstrap()
 			.group(__bossGroup4Netty, __workerGroup4Netty)
 			.channel(NioServerSocketChannel.class)
-			.childHandler(initChildChannelHandler(sslCtx, serverCoreHandler));
+			.childHandler(initChildChannelHandler(serverCoreHandler));
     }
 	
  	@Override
@@ -80,9 +82,8 @@ public class GatewayWebsocket extends Gateway
     {
         ChannelFuture cf = bootstrap.bind(PORT).sync();
         if (cf.isSuccess()) {
-        	logger.info("[IMCORE-ws] 基于MobileIMSDK的WebSocket服务绑定端口"+PORT+"成功 √");
-        }
-        else{
+        	logger.info("[IMCORE-ws] 基于MobileIMSDK的WebSocket服务绑定端口"+PORT+"成功 √ "+(isSsl()?"(已开启SSL/TLS加密传输)":""));
+        } else{
         	logger.info("[IMCORE-ws] 基于MobileIMSDK的WebSocket服务绑定端口"+PORT+"失败 ×");
         }
         
@@ -106,15 +107,16 @@ public class GatewayWebsocket extends Gateway
     		__serverChannel4Netty.close();
 	}
  	
-    protected ChannelHandler initChildChannelHandler(final SslContext sslCtx, final ServerCoreHandler serverCoreHandler)
+    protected ChannelHandler initChildChannelHandler(final ServerCoreHandler serverCoreHandler)
 	{
 		return new ChannelInitializer<Channel>() {
 			@Override
 			protected void initChannel(Channel channel) throws Exception {
 				ChannelPipeline pipeline = channel.pipeline();   
-				if (sslCtx != null) {
-		            pipeline.addLast(sslCtx.newHandler(channel.alloc()));
-		        }
+
+				if(sslContext != null) {
+					pipeline.addLast(sslContext.newHandler(channel.alloc()));
+				}
 				
 		        pipeline.addLast(new HttpServerCodec());
 		        pipeline.addLast(new HttpObjectAggregator(65536));
@@ -124,4 +126,9 @@ public class GatewayWebsocket extends Gateway
 			}
 		};
 	}
+    
+    public static boolean isSsl() 
+    {
+    	return sslContext != null;
+    }
 }

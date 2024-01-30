@@ -94,19 +94,21 @@ public class LogicProcessor
 	public void processLogin(final Channel session, final Protocol pFromClient, final String remoteAddress) throws Exception
 	{
 		final PLoginInfo loginInfo = ProtocolFactory.parsePLoginInfo(pFromClient.getDataContent());
-		logger.info("[IMCORE-{}]>> 客户端"+remoteAddress+"发过来的登陆信息内容是：uid={}、token={}、firstLoginTime={}"
-				, Gateway.$(session), loginInfo.getLoginUserId(), loginInfo.getLoginToken(), loginInfo.getFirstLoginTime());
+		
 		
 		if(loginInfo == null || loginInfo.getLoginUserId() == null)
 		{
 			logger.warn("[IMCORE-{}]>> 收到客户端{}登陆信息，但loginInfo或loginInfo.getLoginUserId()是null，登陆无法继续[uid={}、token={}、firstLoginTime={}]！"
-					, Gateway.$(session), remoteAddress, loginInfo, loginInfo.getLoginUserId(), loginInfo.getFirstLoginTime());
+					, Gateway.$(session), remoteAddress, loginInfo, loginInfo != null ?loginInfo.getLoginUserId():null, loginInfo != null ?loginInfo.getFirstLoginTime():null);
 			
 			if(!GatewayUDP.isUDPChannel(session))
 				session.close();
 			
 			return;
 		}
+		
+		logger.info("[IMCORE-{}]>> 客户端"+remoteAddress+"发过来的登陆信息内容是：uid={}、token={}、firstLoginTime={}"
+				, Gateway.$(session), loginInfo.getLoginUserId(), loginInfo.getLoginToken(), loginInfo.getFirstLoginTime());
 		
 		if(serverCoreHandler.getServerEventListener() != null)
 		{

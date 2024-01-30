@@ -1,9 +1,0 @@
-group 'net.im.sdk'
-version '1.0-SNAPSHOT'
-
-allprojects {
-    repositories {
-        maven { url 'https://maven.aliyun.com/repository/public/' }
-        mavenCentral()
-    }
-}

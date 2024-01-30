@@ -1,0 +1,33 @@
+[versions]
+springBoot = "3.2.1"
+guava = "33.0.0-jre"
+commons-io = "2.15.1"
+commons-lang3 = "3.14.0"
+netty = "4.1.106.Final"
+hutool = "5.8.25"
+codec = "1.16.0"
+arthas = "3.7.2"
+gson = "2.10.1"
+amqp-client = "5.20.0"
+
+[libraries]
+spring-boot-starter-log4j2 = {group = "org.springframework.boot", name = "spring-boot-starter-log4j2", version.ref = "springBoot" }
+
+guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
+commons-io = { group = "commons-io", name = "commons-io", version.ref = "commons-io" }
+commons-lang3 = { group = "org.apache.commons", name = "commons-lang3", version.ref = "commons-lang3" }
+netty-all = { group = "io.netty", name = "netty-all", version.ref = "netty" }
+hutool = {group = "cn.hutool", name = "hutool-all", version.ref = "hutool"}
+codec = {group = "commons-codec", name = "commons-codec", version.ref = "codec"}
+arthas = {group = "com.taobao.arthas", name = "arthas-common", version.ref = "arthas"}
+gson = {group = "com.google.code.gson", name = "gson", version.ref = "gson"}
+amqp-client = {group = "com.rabbitmq", name = "amqp-client", version.ref = "amqp-client"}
+
+[bundles]
+springBootLib = ["spring-boot-starter-log4j2"]
+utilLib = ["guava", "commons-io", "commons-lang3", "hutool"]
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }
+
+# Plugins defined by this project

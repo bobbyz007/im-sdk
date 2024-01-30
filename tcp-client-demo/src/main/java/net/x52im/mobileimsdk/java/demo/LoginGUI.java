@@ -27,7 +27,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Observable;
-import java.util.Observer;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -48,11 +47,7 @@ import net.x52im.mobileimsdk.java.core.LocalDataSender;
 import net.x52im.mobileimsdk.java.core.LocalSocketProvider;
 import net.x52im.mobileimsdk.server.protocol.c.PLoginInfo;
 
-import org.jb2011.lnf.beautyeye.ch3_button.BEButtonUI;
 import org.jb2011.swing9patch.toast.Toast;
-
-import com.eva.epc.common.util.CommonUtils;
-import com.eva.epc.widget.HardLayoutPane;
 
 public class LoginGUI extends JFrame
 {

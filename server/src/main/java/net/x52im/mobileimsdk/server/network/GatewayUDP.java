@@ -59,10 +59,10 @@ public class GatewayUDP extends Gateway
     {
 		ChannelFuture cf = bootstrap.bind("0.0.0.0", PORT).syncUninterruptibly();
 		if (cf.isSuccess()) {
-        	logger.info("[IMCORE-udp] 基于MobileIMSDK的UDP服务绑定端口"+PORT+"成功 √");
+        	logger.info("[IMCORE-udp] 基于MobileIMSDK的UDP服务绑定端口"+PORT+"成功");
         }
         else{
-        	logger.info("[IMCORE-udp] 基于MobileIMSDK的UDP服务绑定端口"+PORT+"失败 ×");
+        	logger.info("[IMCORE-udp] 基于MobileIMSDK的UDP服务绑定端口"+PORT+"失败");
         }
 		__serverChannel4Netty = cf.channel();
 		__serverChannel4Netty.closeFuture().addListener(new ChannelFutureListener() {

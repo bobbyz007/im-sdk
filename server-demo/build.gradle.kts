@@ -11,6 +11,9 @@ dependencies {
     implementation(libs.netty.all)
     implementation(libs.amqp.client)
 
+    // ssl 加密算法
+    implementation(libs.bundles.bouncycastle)
+
     implementation(project(":server"))
 
     // 使用spring starter log

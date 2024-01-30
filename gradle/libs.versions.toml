@@ -9,6 +9,7 @@ codec = "1.16.0"
 arthas = "3.7.2"
 gson = "2.10.1"
 amqp-client = "5.20.0"
+bouncycastle = "1.77"
 
 [libraries]
 spring-boot-starter-log4j2 = {group = "org.springframework.boot", name = "spring-boot-starter-log4j2", version.ref = "springBoot" }
@@ -22,10 +23,14 @@ codec = {group = "commons-codec", name = "commons-codec", version.ref = "codec"}
 arthas = {group = "com.taobao.arthas", name = "arthas-common", version.ref = "arthas"}
 gson = {group = "com.google.code.gson", name = "gson", version.ref = "gson"}
 amqp-client = {group = "com.rabbitmq", name = "amqp-client", version.ref = "amqp-client"}
+bcprov-jdk18on = {group = "org.bouncycastle", name = "bcprov-jdk18on", version.ref = "bouncycastle"}
+bcpg-jdk18on = {group = "org.bouncycastle", name = "bcpg-jdk18on", version.ref = "bouncycastle"}
+bcpkix-jdk18on = {group = "org.bouncycastle", name = "bcpkix-jdk18on", version.ref = "bouncycastle"}
 
 [bundles]
 springBootLib = ["spring-boot-starter-log4j2"]
 utilLib = ["guava", "commons-io", "commons-lang3", "hutool"]
+bouncycastle = ["bcprov-jdk18on", "bcpg-jdk18on", "bcpkix-jdk18on"]
 
 [plugins]
 spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }

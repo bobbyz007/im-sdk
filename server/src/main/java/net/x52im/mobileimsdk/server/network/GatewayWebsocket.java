@@ -82,9 +82,9 @@ public class GatewayWebsocket extends Gateway
     {
         ChannelFuture cf = bootstrap.bind(PORT).sync();
         if (cf.isSuccess()) {
-        	logger.info("[IMCORE-ws] 基于MobileIMSDK的WebSocket服务绑定端口"+PORT+"成功 √ "+(isSsl()?"(已开启SSL/TLS加密传输)":""));
+        	logger.info("[IMCORE-ws] 基于MobileIMSDK的WebSocket服务绑定端口"+PORT+"成功 "+(isSsl()?"(已开启SSL/TLS加密传输)":""));
         } else{
-        	logger.info("[IMCORE-ws] 基于MobileIMSDK的WebSocket服务绑定端口"+PORT+"失败 ×");
+        	logger.info("[IMCORE-ws] 基于MobileIMSDK的WebSocket服务绑定端口"+PORT+"失败");
         }
         
 		__serverChannel4Netty = cf.channel();

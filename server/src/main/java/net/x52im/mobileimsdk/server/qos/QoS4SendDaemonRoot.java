@@ -178,7 +178,7 @@ public class QoS4SendDaemonRoot
 		, immediately ? 0 : CHECH_INTERVAL
 		, CHECH_INTERVAL);
 		
-		logger.debug("【IMCORE"+this.debugTag+"】【QoS发送方】====== 消息发送质量保证线程已成功启动");
+		logger.debug("[IMCORE"+this.debugTag+"][QoS发送方]====== 消息发送质量保证线程已成功启动");
 		
 		return this;
 	}

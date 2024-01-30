@@ -139,9 +139,9 @@ public class ServerLauncherImpl extends ServerLauncher
 			/** 示例 2：使用证书（证书位于相对路径）*/
 			// TODO: 注意：请使用自已的证书，Demo中带的证书为自签名证书且已绑定域名，不安全！！！
 			// 证书文件
-			InputStream certChainFile = ServerLauncherImpl.class.getResourceAsStream("certs/netty-cert2.crt");
+			InputStream certChainFile = ServerLauncherImpl.class.getClassLoader().getResourceAsStream("certs/netty-cert2.crt");
 			// 私钥文件（注意：Netty只支持.pk8格式，如何生成，见JackJiang文章：）
-			InputStream keyFile = ServerLauncherImpl.class.getResourceAsStream("certs/netty-key2.pk8");
+			InputStream keyFile = ServerLauncherImpl.class.getClassLoader().getResourceAsStream("certs/netty-key2.pk8");
 			// 私钥密码（注意：Netty只支持.pk8格式，如何生成，见JackJiang文章：）
 			String keyPassword = "123456";
 			// 生成SslContext对象（为了方便理解，此处使用的是单向认证）

@@ -25,13 +25,18 @@ import net.x52im.mobileimsdk.java.utils.Log;
 public class LocalSocketProvider {
 	private final static String TAG = LocalSocketProvider.class.getSimpleName();
 
-	private static LocalSocketProvider instance = null;
+	private static volatile LocalSocketProvider instance = null;
 
 	private DatagramSocket localSocket = null;
 
 	public static LocalSocketProvider getInstance() {
-		if (instance == null)
-			instance = new LocalSocketProvider();
+		if (instance == null) {
+			synchronized (LocalSocketProvider.class) {
+				if (instance == null) {
+					instance = new LocalSocketProvider();
+				}
+			}
+		}
 		return instance;
 	}
 

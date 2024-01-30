@@ -24,10 +24,12 @@ import javax.swing.Timer;
 import net.x52im.mobileimsdk.java.ClientCoreSDK;
 import net.x52im.mobileimsdk.java.utils.Log;
 
+import org.jdesktop.swingworker.SwingWorker;
+
 public class AutoReLoginDaemon {
 	private final static String TAG = AutoReLoginDaemon.class.getSimpleName();
 
-	private static AutoReLoginDaemon instance = null;
+	private static volatile AutoReLoginDaemon instance = null;
 
 	public static int AUTO_RE$LOGIN_INTERVAL = 2000;
 
@@ -36,8 +38,13 @@ public class AutoReLoginDaemon {
 	private Timer timer = null;
 
 	public static AutoReLoginDaemon getInstance() {
-		if (instance == null)
-			instance = new AutoReLoginDaemon();
+		if (instance == null) {
+			synchronized (AutoReLoginDaemon.class) {
+				if (instance == null) {
+					instance = new AutoReLoginDaemon();
+				}
+			}
+		}
 		return instance;
 	}
 

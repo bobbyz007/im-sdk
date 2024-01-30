@@ -32,6 +32,7 @@ import java.util.Observer;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -114,7 +115,7 @@ public class LoginGUI extends JFrame
 		mainPanel.addTitledLineSeparator("");
 		JPanel btnAndVerPanel = new JPanel();
 		btnAndVerPanel.setLayout(new BoxLayout(btnAndVerPanel, BoxLayout.LINE_AXIS));
-		JLabel lbVer= new JLabel("v6.2b220716.1");
+		JLabel lbVer= new JLabel("v6.4b230922.1");
 		lbVer.setForeground(new Color(184,184,184));
 		btnAndVerPanel.add(lbVer);
 		btnAndVerPanel.add(Box.createHorizontalGlue());
@@ -135,9 +136,9 @@ public class LoginGUI extends JFrame
 		bottomPanel.setBackground(Color.white);
 		bottomPanel.setBorder(BorderFactory.createCompoundBorder(
 				bottomPabelTopBorder, BorderFactory.createEmptyBorder(5, 0, 5, 0)));
-		/*bottomPanel.add(
+		bottomPanel.add(
 			new JLabel(new ImageIcon(LoginGUI.class.getResource("res/copyright_img.png")))
-			, BorderLayout.CENTER);*/
+			, BorderLayout.CENTER);
 		
 		// 总体界面布局
 		mainPanel.setBorder(BorderFactory.createEmptyBorder(4, 5, 4, 5));
@@ -187,7 +188,7 @@ public class LoginGUI extends JFrame
 					//## BUG FIX START: 20170718 by Jack Jiang 
 					//## 让以下代码异步运行于EDT线程，从而解决登陆界面切到主界面时偶尔卡死问题
 					// startup GUI
-					UdpClientLaunch.runOnUiThread(new Runnable()
+					Launch.runOnUiThread(new Runnable()
 					{
 						public void run()
 						{
@@ -290,7 +291,7 @@ public class LoginGUI extends JFrame
 	
 	public void showToast(String text)
 	{
-//		Toast.showTost(3000, text, new Point((int)(this.getLocationOnScreen().getX()),(int)(this.getLocationOnScreen().getY())));
+		Toast.showTost(3000, text, new Point((int)(this.getLocationOnScreen().getX()),(int)(this.getLocationOnScreen().getY())));
 	}
 	
 	//-------------------------------------------------------------------------- inner classes

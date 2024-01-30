@@ -29,7 +29,7 @@ import net.x52im.mobileimsdk.java.utils.Log;
 public class KeepAliveDaemon {
 	private final static String TAG = KeepAliveDaemon.class.getSimpleName();
 
-	private static KeepAliveDaemon instance = null;
+	private static volatile KeepAliveDaemon instance = null;
 
 	public static int KEEP_ALIVE_INTERVAL = 3000;// 1000;
 	public static int NETWORK_CONNECTION_TIME_OUT = 10 * 1000;
@@ -46,8 +46,13 @@ public class KeepAliveDaemon {
 	private Timer keepAliveTimeoutTimer = null;
 	
 	public static KeepAliveDaemon getInstance() {
-		if (instance == null)
-			instance = new KeepAliveDaemon();
+		if (instance == null) {
+			synchronized (KeepAliveDaemon.class) {
+				if (instance == null) {
+					instance = new KeepAliveDaemon();
+				}
+			}
+		}
 		return instance;
 	}
 

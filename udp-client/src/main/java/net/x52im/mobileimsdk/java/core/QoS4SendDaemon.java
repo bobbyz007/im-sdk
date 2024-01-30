@@ -21,17 +21,19 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.swing.*;
+import javax.swing.Timer;
 
 import net.x52im.mobileimsdk.java.ClientCoreSDK;
 import net.x52im.mobileimsdk.java.utils.Log;
 import net.x52im.mobileimsdk.server.protocol.Protocol;
 
+import org.jdesktop.swingworker.SwingWorker;
+
 public class QoS4SendDaemon
 {
 	private final static String TAG = QoS4SendDaemon.class.getSimpleName();
 
-	private static QoS4SendDaemon instance = null;
+	private static volatile QoS4SendDaemon instance = null;
 		
 	public final static int CHECH_INTERVAL = 5000;
 	public final static int MESSAGES_JUST$NOW_TIME = 3 * 1000;
@@ -45,9 +47,13 @@ public class QoS4SendDaemon
 	
 	public static QoS4SendDaemon getInstance()
 	{
-		if(instance == null)
-			instance = new QoS4SendDaemon();
-		
+		if (instance == null) {
+			synchronized (QoS4SendDaemon.class) {
+				if (instance == null) {
+					instance = new QoS4SendDaemon();
+				}
+			}
+		}
 		return instance;
 	}
 	

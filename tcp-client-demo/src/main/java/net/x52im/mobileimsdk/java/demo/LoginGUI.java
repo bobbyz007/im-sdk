@@ -22,6 +22,7 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.util.function.Function;
 
 import javax.swing.BorderFactory;
@@ -102,16 +103,14 @@ public class LoginGUI extends JFrame
 		usernamePane.add(editLoginName, BorderLayout.EAST);
 		mainPanel.add(usernamePane);
 
-
 		JPanel pwdPane = new JPanel(new BorderLayout());
 		pwdPane.add(new JLabel("密  码："), BorderLayout.WEST);
 		pwdPane.add(editLoginPsw, BorderLayout.EAST);
 		mainPanel.add(pwdPane);
 
-
 		JPanel btnAndVerPanel = new JPanel();
 		btnAndVerPanel.setLayout(new BoxLayout(btnAndVerPanel, BoxLayout.LINE_AXIS));
-		JLabel lbVer= new JLabel("v6.4b230922.1");
+		JLabel lbVer= new JLabel("v1.0");
 		lbVer.setForeground(new Color(184,184,184));
 		btnAndVerPanel.add(lbVer);
 		btnAndVerPanel.add(Box.createHorizontalGlue());
@@ -140,9 +139,16 @@ public class LoginGUI extends JFrame
 		this.getContentPane().setLayout(new BorderLayout());
 		this.getContentPane().add(mainPanel, BorderLayout.CENTER);
 		this.getContentPane().add(bottomPanel, BorderLayout.SOUTH);
-		
+
+		this.addWindowFocusListener(new WindowAdapter() {
+			@Override
+			public void windowGainedFocus(WindowEvent e) {
+				editLoginName.requestFocus();
+			}
+		});
+		this.getRootPane().setDefaultButton(btnLogin);
 		// 窗体设置
-		this.setTitle("MobileIMSDK_TCP - Demo登陆");
+		this.setTitle("TCP - Demo登陆");
 		this.setResizable(false);
 		this.pack();
 	}

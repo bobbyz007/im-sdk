@@ -20,13 +20,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Observable;
+import java.util.function.Function;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -46,8 +42,7 @@ import net.x52im.mobileimsdk.java.conf.ConfigEntity;
 import net.x52im.mobileimsdk.java.core.LocalDataSender;
 import net.x52im.mobileimsdk.java.core.LocalSocketProvider;
 import net.x52im.mobileimsdk.server.protocol.c.PLoginInfo;
-
-import org.jb2011.swing9patch.toast.Toast;
+import org.apache.commons.lang3.StringUtils;
 
 public class LoginGUI extends JFrame
 {
@@ -60,7 +55,7 @@ public class LoginGUI extends JFrame
 	private OnLoginProgress onLoginProgress = null;
 	/** 收到服务端的登陆完成反馈时要通知的观察者（因登陆是异步实现，本观察者将由
 	 *  ChatBaseEvent 事件的处理者在收到服务端的登陆反馈后通知之） */
-	private Observer onLoginSucessObserver = null;
+	private Function<Object, Void> onLoginSuccessCallback = null;
 	
 	public LoginGUI()
 	{	
@@ -86,28 +81,34 @@ public class LoginGUI extends JFrame
 		editServerIp.setText("127.0.0.1");// default value
 		editServerPort.setText("8901");	// default value
 		btnLogin = new JButton("  登 陆  ");
-		btnLogin.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.blue));
-		btnLogin.setForeground(Color.white);
 		editLoginName = new JTextField(30);
 		editLoginPsw = new JPasswordField(30);
 		
 		// 登陆信息主布局
-		HardLayoutPane mainPanel = new HardLayoutPane();
-		mainPanel.setComponentInsets(new Insets(4,10,4,10));
+		JPanel mainPanel=new JPanel();
+		BoxLayout layout=new BoxLayout(mainPanel, BoxLayout.Y_AXIS);
+		mainPanel.setLayout(layout);
+
 		JPanel serverInfoPane = new JPanel(new BorderLayout());
 		JPanel portInfoPane = new JPanel(new BorderLayout());
 		portInfoPane.add(new JLabel("："), BorderLayout.WEST);
 		portInfoPane.add(editServerPort, BorderLayout.CENTER);
 		serverInfoPane.add(editServerIp, BorderLayout.CENTER);
 		serverInfoPane.add(portInfoPane, BorderLayout.EAST);
-		mainPanel.addTo(serverInfoPane, 2, true);
-		mainPanel.nextLine();
-		mainPanel.addTo(new JLabel("用户名："), 1, true);
-		mainPanel.addTo(editLoginName, 1, true);
-		mainPanel.nextLine();
-		mainPanel.addTo(new JLabel("密  码："), 1, true);
-		mainPanel.addTo(editLoginPsw, 1, true);
-		mainPanel.addTitledLineSeparator("");
+		mainPanel.add(serverInfoPane);
+
+		JPanel usernamePane = new JPanel(new BorderLayout());
+		usernamePane.add(new JLabel("用户名："), BorderLayout.WEST);
+		usernamePane.add(editLoginName, BorderLayout.EAST);
+		mainPanel.add(usernamePane);
+
+
+		JPanel pwdPane = new JPanel(new BorderLayout());
+		pwdPane.add(new JLabel("密  码："), BorderLayout.WEST);
+		pwdPane.add(editLoginPsw, BorderLayout.EAST);
+		mainPanel.add(pwdPane);
+
+
 		JPanel btnAndVerPanel = new JPanel();
 		btnAndVerPanel.setLayout(new BoxLayout(btnAndVerPanel, BoxLayout.LINE_AXIS));
 		JLabel lbVer= new JLabel("v6.4b230922.1");
@@ -115,10 +116,10 @@ public class LoginGUI extends JFrame
 		btnAndVerPanel.add(lbVer);
 		btnAndVerPanel.add(Box.createHorizontalGlue());
 		btnAndVerPanel.add(btnLogin);
-		mainPanel.addTo(btnAndVerPanel, 2, true);
-		
+		mainPanel.add(btnAndVerPanel);
+
 		// 下方的copyright面板
-		LineBorder bottomPabelTopBorder = new LineBorder(new Color(235,235,235)){
+		LineBorder bottomPanelTopBorder = new LineBorder(new Color(235,235,235)){
 			public void paintBorder(Component c, Graphics g, int x, int y, int width, int height)
 			{
 		        Color oldColor = g.getColor();
@@ -130,13 +131,12 @@ public class LoginGUI extends JFrame
 		JPanel bottomPanel = new JPanel(new BorderLayout());
 		bottomPanel.setBackground(Color.white);
 		bottomPanel.setBorder(BorderFactory.createCompoundBorder(
-				bottomPabelTopBorder, BorderFactory.createEmptyBorder(5, 0, 5, 0)));
+				bottomPanelTopBorder, BorderFactory.createEmptyBorder(5, 0, 5, 0)));
 		bottomPanel.add(
-			new JLabel(new ImageIcon(LoginGUI.class.getResource("res/copyright_img.png")))
+			new JLabel(new ImageIcon(LoginGUI.class.getClassLoader().getResource("copyright_img.png")))
 			, BorderLayout.CENTER);
 		
 		// 总体界面布局
-		mainPanel.setBorder(BorderFactory.createEmptyBorder(4, 5, 4, 5));
 		this.getContentPane().setLayout(new BorderLayout());
 		this.getContentPane().add(mainPanel, BorderLayout.CENTER);
 		this.getContentPane().add(bottomPanel, BorderLayout.SOUTH);
@@ -149,13 +149,7 @@ public class LoginGUI extends JFrame
 	
 	private void initListeners()
 	{
-		btnLogin.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				doLogin();
-			}
-		});
+		btnLogin.addActionListener(e -> doLogin());
 		
 		this.addWindowListener(new WindowAdapter(){
 			public void windowClosing(WindowEvent e){
@@ -169,42 +163,35 @@ public class LoginGUI extends JFrame
 		// 实例化登陆进度提示封装类
 		onLoginProgress = new OnLoginProgress();
 		// 准备好异步登陆结果回调观察者（将在登陆方法中使用）
-		onLoginSucessObserver = new Observer(){
-			@Override
-			public void update(Observable observable, Object data)
+		onLoginSuccessCallback = data -> {
+			// * 已收到服务端登陆反馈则当然应立即取消显示登陆进度条
+			onLoginProgress.showProgressing(false);
+			// 服务端返回的登陆结果值
+			int code = (Integer)data;
+			// 登陆成功
+			if(code == 0)
 			{
-				// * 已收到服务端登陆反馈则当然应立即取消显示登陆进度条
-				onLoginProgress.showProgressing(false);
-				// 服务端返回的登陆结果值
-				int code = (Integer)data;
-				// 登陆成功
-				if(code == 0)
-				{
-					//## BUG FIX START: 20170718 by Jack Jiang 
-					//## 让以下代码异步运行于EDT线程，从而解决登陆界面切到主界面时偶尔卡死问题
-					// startup GUI
-					Launch.runOnUiThread(new Runnable()
-					{
-						public void run()
-						{
-							//** 提示：登陆MobileIMSDK服务器成功后的事情在此实现即可
-							// 进入主界面
-							MainGUI frame = new MainGUI();
-							frame.setLocationRelativeTo(null);
-							frame.setVisible(true);
+				//## BUG FIX START: 20170718 by Jack Jiang
+				//## 让以下代码异步运行于EDT线程，从而解决登陆界面切到主界面时偶尔卡死问题
+				// startup GUI
+				Launch.runOnUiThread(() -> {
+                    //** 提示：登陆MobileIMSDK服务器成功后的事情在此实现即可
+                    // 进入主界面
+                    MainGUI frame = new MainGUI();
+                    frame.setLocationRelativeTo(null);
+                    frame.setVisible(true);
 
-							// 同时关闭登陆界面
-							LoginGUI.this.dispose();
-						}
-					});
-					//## BUG FIX END: 20170718 by Jack Jiang 
-				}
-				// 登陆失败
-				else
-					JOptionPane.showMessageDialog(LoginGUI.this, "Sorry，登陆失败，错误码="+code
-							, "友情提示",JOptionPane.ERROR_MESSAGE);  
+                    // 同时关闭登陆界面
+                    LoginGUI.this.dispose();
+                });
+				//## BUG FIX END: 20170718 by Jack Jiang
 			}
-		};
+			// 登陆失败
+			else
+				JOptionPane.showMessageDialog(LoginGUI.this, "Sorry，登陆失败，错误码="+code
+						, "友情提示",JOptionPane.ERROR_MESSAGE);
+            return null;
+        };
 	}
 	
 	/**
@@ -215,8 +202,8 @@ public class LoginGUI extends JFrame
 		//** 设置服务器地址和端口号
 		String serverIP = editServerIp.getText();
 		String serverPort = editServerPort.getText();
-		if(!CommonUtils.isStringEmpty(serverIP, true)
-			&& !CommonUtils.isStringEmpty(serverPort, true))
+		if(StringUtils.isNotBlank(serverIP)
+			&& StringUtils.isNotBlank(serverPort))
 		{
 			// 无条件重置socket，防止首次登陆时用了错误的ip或域名，下次登陆时sendData中仍然使用老的ip
 			// 说明：本行代码建议仅用于Demo时，生产环境下是没有意义的，因为你的APP里不可能连IP都搞错了
@@ -241,8 +228,8 @@ public class LoginGUI extends JFrame
 		}
 		
 		// 开始发送登陆信息
-		if(editLoginName.getText().toString().trim().length() > 0
-			&& editLoginPsw.getText().toString().trim().length() > 0)
+		if(editLoginName.getText().trim().length() > 0
+			&& editLoginPsw.getPassword().length > 0)
 		{
 			doLoginImpl();
 		}
@@ -261,9 +248,9 @@ public class LoginGUI extends JFrame
 		onLoginProgress.showProgressing(true);
 		// * 设置好服务端反馈的登陆结果观察者（当客户端收到服务端反馈过来的登陆消息时将被通知）
 		IMClientManager.getInstance().getBaseEventListener()
-			.setLoginOkForLaunchObserver(onLoginSucessObserver);
+			.setLoginOkForLaunchObserver(onLoginSuccessCallback);
 
-		PLoginInfo loginInfo = new PLoginInfo(editLoginName.getText(), editLoginPsw.getText());
+		PLoginInfo loginInfo = new PLoginInfo(editLoginName.getText(), String.valueOf(editLoginPsw.getPassword()));
 		// * 异步提交登陆名和密码
 		new LocalDataSender.SendLoginDataAsync(loginInfo){
 			/**
@@ -289,8 +276,8 @@ public class LoginGUI extends JFrame
 	
 	public void showToast(String text)
 	{
-		Toast.showTost(3000, text, new Point((int)(this.getLocationOnScreen().getX()),
-				(int)(this.getLocationOnScreen().getY())));
+		JOptionPane.showMessageDialog(LoginGUI.this
+				, text, "友情提示", JOptionPane.WARNING_MESSAGE);
 	}
 	
 	//-------------------------------------------------------------------------- inner classes
@@ -311,12 +298,7 @@ public class LoginGUI extends JFrame
 		
 		private void init()
 		{
-			timer = new Timer(RETRY_DELAY, new ActionListener(){
-				public void actionPerformed(ActionEvent e)
-				{
-					onTimeout();
-				}
-			});
+			timer = new Timer(RETRY_DELAY, e -> onTimeout());
 		}
 		
 		/**

@@ -18,7 +18,6 @@ package net.x52im.mobileimsdk.java.demo;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -26,25 +25,11 @@ import java.awt.event.WindowEvent;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.JTextPane;
+import javax.swing.*;
 
 import net.x52im.mobileimsdk.java.ClientCoreSDK;
 import net.x52im.mobileimsdk.java.core.LocalDataSender;
 import net.x52im.mobileimsdk.java.utils.Log;
-
-import org.jb2011.lnf.beautyeye.ch3_button.BEButtonUI;
-import org.jb2011.swing9patch.toast.Toast;
-
-import com.eva.epc.widget.HardLayoutPane;
 
 public class MainGUI extends JFrame
 {
@@ -71,16 +56,12 @@ public class MainGUI extends JFrame
 	{
 		// 登陆组件初始化
 		btnLogout = new JButton("退出程序");
-		btnLogout.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.red));
-		btnLogout.setForeground(Color.white);
 		viewMyid = new JLabel();
 		viewMyid.setForeground(new Color(255,0,255));
 		viewMyid.setText("未登陆");
 		
 		// 消息发送组件初始化
 		btnSend = new JButton("发送消息");
-		btnSend.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.green));
-		btnSend.setForeground(Color.white);
 		editId = new JTextField(20);
 		editContent = new JTextField(20);
 		
@@ -88,7 +69,6 @@ public class MainGUI extends JFrame
 		debugPane=new JTextPane();
 		debugPane.setBackground(Color.black);
 		debugPane.setCaretColor(Color.white);
-		//
 		Log.getInstance().setLogDest(debugPane);
 		
 		// IM通讯信息显示面板初始化
@@ -104,23 +84,25 @@ public class MainGUI extends JFrame
 		authPane.add(btnLogout);
 		
 		// 消息发送布局
-		HardLayoutPane toPanel = new HardLayoutPane();
-		toPanel.addTo(new JLabel("对方账号："), 1, true);
-		toPanel.addTo(editId, 1, true);
-		toPanel.nextLine();
-		toPanel.addTo(new JLabel("发送内容："), 1, true);
-		toPanel.addTo(editContent, 1, true);
-		toPanel.nextLine();
-		toPanel.addTo(btnSend, 4, true);
-		toPanel.nextLine();
-		
-		HardLayoutPane oprMainPanel = new HardLayoutPane();
-		oprMainPanel.addTitledLineSeparator("登陆认证");
-		oprMainPanel.addTo(authPane, 1, true);
-		oprMainPanel.addTitledLineSeparator("消息发送");
-		oprMainPanel.addTo(toPanel, 1, true);
-		oprMainPanel.addTitledLineSeparator();
-		
+		JPanel userPane = new JPanel(new BorderLayout());
+		userPane.add(new JLabel("对方账号："), BorderLayout.WEST);
+		userPane.add(editId, BorderLayout.EAST);
+
+		JPanel contentPane = new JPanel(new BorderLayout());
+		contentPane.add(new JLabel("发送内容："), BorderLayout.WEST);
+		contentPane.add(editContent, BorderLayout.EAST);
+
+		JPanel sendPanel=new JPanel();
+		BoxLayout layout=new BoxLayout(sendPanel, BoxLayout.Y_AXIS);
+		sendPanel.setLayout(layout);
+		sendPanel.add(contentPane);
+		sendPanel.add(btnSend);
+
+		JPanel oprMainPanel = new JPanel(new BorderLayout());
+		oprMainPanel.add(authPane, BorderLayout.NORTH);
+		oprMainPanel.add(userPane, BorderLayout.CENTER);
+		oprMainPanel.add(sendPanel, BorderLayout.SOUTH);
+
 		JPanel leftPanel = new JPanel(new BorderLayout());
 		leftPanel.add(oprMainPanel, BorderLayout.NORTH);
 		JScrollPane imInfoSc = new JScrollPane(imInfoPane);
@@ -197,8 +179,8 @@ public class MainGUI extends JFrame
 	
 	private void doSendMessage()
 	{
-		final String msg = editContent.getText().toString().trim();
-		final String friendId = editId.getText().toString().trim();
+		final String msg = editContent.getText().trim();
+		final String friendId = editId.getText().trim();
 		if(msg.length() > 0 && friendId.length() > 0 )
 		{
 			MainGUI.this.showIMInfo_black("我对"+friendId+"说："+msg);
@@ -284,8 +266,8 @@ public class MainGUI extends JFrame
 	
 	public void showToast(String text)
 	{
-		Toast.showTost(3000, text, new Point((int)(this.getLocationOnScreen().getX())+50,
-				(int)(this.getLocationOnScreen().getY())+400));
+		JOptionPane.showMessageDialog(MainGUI.this
+				, text, "友情提示", JOptionPane.WARNING_MESSAGE);
 	}
 	//--------------------------------------------------------------- 控制台输出和Toast显示方法 END
 }

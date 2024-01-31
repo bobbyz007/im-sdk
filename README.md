@@ -6,3 +6,8 @@ Based on https://github.com/JackJiang2011/MobileIMSDK
 为了突出核心交互逻辑， 简化界面实现。
 1. 简化java原生界面实现，仅仅依赖javax swing，不依赖任何第三方包。
 2. 优化代码逻辑。
+
+## How to run?
+1. 启动server：net.x52im.mobileimsdk.server.demo.ServerLauncherImpl
+2. 启动多个tcp或udp客户端： net.x52im.mobileimsdk.java.demo
+3. 随便输入用户名或密码登录， 即可在各个用户之间发送消息。

@@ -28,7 +28,7 @@ import net.x52im.mobileimsdk.server.protocol.Protocol;
 import net.x52im.mobileimsdk.server.protocol.ProtocolFactory;
 import net.x52im.mobileimsdk.server.protocol.c.PLoginInfo;
 
-import org.jdesktop.swingworker.SwingWorker;
+import javax.swing.*;
 
 public class LocalDataSender {
 	private final static String TAG = LocalDataSender.class.getSimpleName();

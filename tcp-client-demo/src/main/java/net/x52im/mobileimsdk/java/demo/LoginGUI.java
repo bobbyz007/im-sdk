@@ -142,7 +142,7 @@ public class LoginGUI extends JFrame
 		this.getContentPane().add(bottomPanel, BorderLayout.SOUTH);
 		
 		// 窗体设置
-		this.setTitle("MobileIMSDK_TCP v6 - Demo登陆");
+		this.setTitle("MobileIMSDK_TCP - Demo登陆");
 		this.setResizable(false);
 		this.pack();
 	}

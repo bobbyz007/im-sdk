@@ -17,6 +17,7 @@
 package net.x52im.mobileimsdk.java.demo.event;
 
 import java.util.Observer;
+import java.util.function.Function;
 
 import javax.swing.JOptionPane;
 
@@ -39,7 +40,7 @@ public class ChatBaseEventImpl implements ChatBaseEvent
 	
 	// 本Observer目前仅用于登陆时（因为登陆与收到服务端的登陆验证结果
 	// 是异步的，所以有此观察者来完成收到验证后的处理）
-	private Observer loginOkForLaunchObserver = null;
+	private Function<Object, Void> loginOkForLaunchCallback = null;
 	
 	/**
 	 * 本地用户的登陆结果回调事件通知。
@@ -73,10 +74,10 @@ public class ChatBaseEventImpl implements ChatBaseEvent
 		}
 		
 		// 此观察者只有开启程序首次使用登陆界面时有用
-		if(loginOkForLaunchObserver != null)
+		if(loginOkForLaunchCallback != null)
 		{
-			loginOkForLaunchObserver.update(null, errorCode);
-			loginOkForLaunchObserver = null;
+			loginOkForLaunchCallback.apply(errorCode);
+			loginOkForLaunchCallback = null;
 		}
 	}
 
@@ -135,9 +136,9 @@ public class ChatBaseEventImpl implements ChatBaseEvent
 		}
 	}
 	
-	public void setLoginOkForLaunchObserver(Observer loginOkForLaunchObserver)
+	public void setLoginOkForLaunchObserver(Function<Object, Void> loginOkForLaunchCallback)
 	{
-		this.loginOkForLaunchObserver = loginOkForLaunchObserver;
+		this.loginOkForLaunchCallback = loginOkForLaunchCallback;
 	}
 	
 	public ChatBaseEventImpl setMainGUI(MainGUI mainGUI)

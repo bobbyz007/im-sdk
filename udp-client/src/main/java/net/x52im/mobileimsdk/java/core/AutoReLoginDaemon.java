@@ -24,8 +24,6 @@ import javax.swing.Timer;
 import net.x52im.mobileimsdk.java.ClientCoreSDK;
 import net.x52im.mobileimsdk.java.utils.Log;
 
-import org.jdesktop.swingworker.SwingWorker;
-
 public class AutoReLoginDaemon {
 	private final static String TAG = AutoReLoginDaemon.class.getSimpleName();
 

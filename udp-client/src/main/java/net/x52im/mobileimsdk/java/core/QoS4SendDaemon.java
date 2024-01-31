@@ -21,13 +21,11 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.swing.Timer;
+import javax.swing.*;
 
 import net.x52im.mobileimsdk.java.ClientCoreSDK;
 import net.x52im.mobileimsdk.java.utils.Log;
 import net.x52im.mobileimsdk.server.protocol.Protocol;
-
-import org.jdesktop.swingworker.SwingWorker;
 
 public class QoS4SendDaemon
 {

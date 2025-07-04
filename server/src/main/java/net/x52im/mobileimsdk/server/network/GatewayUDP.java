@@ -22,9 +22,9 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
-import io.netty.channel.DefaultEventLoopGroup;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.MultiThreadIoEventLoopGroup;
+import io.netty.channel.nio.NioIoHandler;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import net.x52im.mobileimsdk.server.ServerCoreHandler;
 import net.x52im.mobileimsdk.server.network.udp.MBUDPClientInboundHandler;
@@ -40,8 +40,8 @@ public class GatewayUDP extends Gateway
     public static int PORT = 7901;
     public static int SESION_RECYCLER_EXPIRE = 10;
 
-    protected final EventLoopGroup __bossGroup4Netty = new NioEventLoopGroup();
- 	protected final EventLoopGroup __workerGroup4Netty = new DefaultEventLoopGroup();
+    protected final EventLoopGroup __bossGroup4Netty = new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory());
+ 	protected final EventLoopGroup __workerGroup4Netty = new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory());
  	protected Channel __serverChannel4Netty = null;
  	protected ServerBootstrap bootstrap = null;
 
@@ -59,10 +59,10 @@ public class GatewayUDP extends Gateway
     {
 		ChannelFuture cf = bootstrap.bind("0.0.0.0", PORT).syncUninterruptibly();
 		if (cf.isSuccess()) {
-        	logger.info("[IMCORE-udp] 基于MobileIMSDK的UDP服务绑定端口"+PORT+"成功");
+        	logger.info("[IMCORE-udp] 基于MobileIMSDK的UDP服务绑定端口"+PORT+"成功 √");
         }
         else{
-        	logger.info("[IMCORE-udp] 基于MobileIMSDK的UDP服务绑定端口"+PORT+"失败");
+        	logger.info("[IMCORE-udp] 基于MobileIMSDK的UDP服务绑定端口"+PORT+"失败 ×");
         }
 		__serverChannel4Netty = cf.channel();
 		__serverChannel4Netty.closeFuture().addListener(new ChannelFutureListener() {

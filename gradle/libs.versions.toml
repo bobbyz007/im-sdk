@@ -1,15 +1,15 @@
 [versions]
-springBoot = "3.2.1"
-guava = "33.0.0-jre"
-commons-io = "2.15.1"
-commons-lang3 = "3.14.0"
-netty = "4.1.106.Final"
-hutool = "5.8.25"
-codec = "1.16.0"
-arthas = "3.7.2"
-gson = "2.10.1"
-amqp-client = "5.20.0"
-bouncycastle = "1.77"
+springBoot = "3.5.3"
+guava = "33.4.8-jre"
+commons-io = "2.19.0"
+commons-lang3 = "3.17.0"
+netty = "4.2.2.Final"
+hutool = "5.8.38"
+codec = "1.18.0"
+arthas = "4.0.5"
+gson = "2.13.1"
+amqp-client = "5.25.0"
+bouncycastle = "1.81"
 
 [libraries]
 spring-boot-starter-log4j2 = {group = "org.springframework.boot", name = "spring-boot-starter-log4j2", version.ref = "springBoot" }

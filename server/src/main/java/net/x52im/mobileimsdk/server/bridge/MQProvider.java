@@ -59,8 +59,6 @@ public class MQProvider
 	protected ConcurrentLinkedQueue<String[]> publishTrayAgainCache = new ConcurrentLinkedQueue<String[]>();
 	protected boolean publishTrayAgainEnable = false;
 	
-	protected Observer consumerObserver = null;
-	
 	protected String encodeCharset = null;
 	protected String decodeCharset = null;
 	protected String mqURI = null;

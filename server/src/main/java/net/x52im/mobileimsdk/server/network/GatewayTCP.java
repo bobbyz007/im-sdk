@@ -25,7 +25,9 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.MultiThreadIoEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.nio.NioIoHandler;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
@@ -48,8 +50,8 @@ public class GatewayTCP extends Gateway
 	
 	public static SslContext sslContext = null;
 
-	protected final EventLoopGroup __bossGroup4Netty = new NioEventLoopGroup(1);
- 	protected final EventLoopGroup __workerGroup4Netty = new NioEventLoopGroup();
+	protected final EventLoopGroup __bossGroup4Netty = new MultiThreadIoEventLoopGroup(1, NioIoHandler.newFactory());
+ 	protected final EventLoopGroup __workerGroup4Netty = new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory());
  	protected Channel __serverChannel4Netty = null;
  	
  	protected ServerBootstrap bootstrap = null;
@@ -72,10 +74,10 @@ public class GatewayTCP extends Gateway
     {
         ChannelFuture cf = bootstrap.bind(PORT).sync();
         if (cf.isSuccess()) {
-        	logger.info("[IMCORE-tcp] 基于MobileIMSDK的TCP服务绑定端口"+PORT+"成功"+(isSsl()?"(已开启SSL/TLS加密传输)":""));
+        	logger.info("[IMCORE-tcp] 基于MobileIMSDK的TCP服务绑定端口"+PORT+"成功 √ "+(isSsl()?"(已开启SSL/TLS加密传输)":""));
         }
         else{
-        	logger.info("[IMCORE-tcp] 基于MobileIMSDK的TCP服务绑定端口"+PORT+"失败");
+        	logger.info("[IMCORE-tcp] 基于MobileIMSDK的TCP服务绑定端口"+PORT+"失败 ×");
         }
         
 		__serverChannel4Netty = cf.channel();
